@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Validator;
+use Cache;
 
 class UsersController extends Controller
 {
@@ -25,25 +26,29 @@ class UsersController extends Controller
         $filterEmail = $request->get('email', '');
         $filterPhoneNumber = $request->get('phone_number', '');
 
-        // Creando a consulta com a ordem, os filtros e a paginação
-        $usersQuery = User::orderBy($orderByField, $orderByOrder);
+        // Salvando na cache esta consulta
+        $cacheKey = "list-users-".md5($orderByField . $orderByOrder . $page . $limit . $filterName . $filterCpf . $filterEmail . $filterPhoneNumber);
+        $replay = Cache::remember($cacheKey, 22*60, function()  use ($orderByField, $orderByOrder, $page, $limit, $filterName, $filterCpf, $filterEmail, $filterPhoneNumber){
+            // Creando a consulta com a ordem, os filtros e a paginação
+            $usersQuery = User::orderBy($orderByField, $orderByOrder);
 
-        if($filterName !== '') $usersQuery->where('name', 'like', "%{$filterName}%");
-        if($filterCpf !== '') $usersQuery->where('cpf', 'like', "%{$filterCpf}%");
-        if($filterEmail !== '') $usersQuery->where('email', 'like', "%{$filterEmail}%");
-        if($filterPhoneNumber !== '') $usersQuery->where('phone_number', 'like', "%{$filterPhoneNumber}%");
+            if($filterName !== '') $usersQuery->where('name', 'like', "%{$filterName}%");
+            if($filterCpf !== '') $usersQuery->where('cpf', 'like', "%{$filterCpf}%");
+            if($filterEmail !== '') $usersQuery->where('email', 'like', "%{$filterEmail}%");
+            if($filterPhoneNumber !== '') $usersQuery->where('phone_number', 'like', "%{$filterPhoneNumber}%");
 
-        $usersQuery->skip(($page-1)*$limit);
-        $usersQuery->take($limit);
+            $usersQuery->skip(($page-1)*$limit);
+            $usersQuery->take($limit);
 
-        $rowCount = $usersQuery->count();
-        $users = $usersQuery->get();
-        $replay = array(
-            'itens' => $users,
-            'page' => $page,
-            'limit' => $limit,
-            'count' => $rowCount
-        );
+            $rowCount = $usersQuery->count();
+            $users = $usersQuery->get();
+            return array(
+                'itens' => $users,
+                'page' => $page,
+                'limit' => $limit,
+                'count' => $rowCount
+            );
+        });
 
         return response()->json($replay);
     }
@@ -70,6 +75,7 @@ class UsersController extends Controller
         // Criando o usuario
         $user = new User();
         $user->fill($data);
+        Cache::flush();
         $user->save();
 
         // Retornando dados do novo usuario em formato json
@@ -78,8 +84,13 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        // Obtendo os dados do usuario
-        $user = User::find($id);
+
+        // Salvando na cache este usuario
+        $cacheKey = "show-user-id-".$id;
+        $user = Cache::remember($cacheKey, 22*60, function() use ($id) {
+            // Obtendo os dados do usuario
+            return User::find($id);
+        });
 
         // Verificar se o usuário existe
         if(!$user) {
@@ -125,6 +136,7 @@ class UsersController extends Controller
 
         // Salvando dados do usuario
         $user->fill($data);
+        Cache::flush();
         $user->save();
 
         // Retornando dados do usuario em formato json
@@ -141,6 +153,7 @@ class UsersController extends Controller
             ], 404);
         }
 
+        Cache::flush();
         return response()->json($user->delete(), 204);
     }
 
