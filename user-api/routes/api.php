@@ -17,8 +17,10 @@ Route::group(array('prefix' => '/'), function()
 {
 
   Route::get('/', function () {
-      return response()->json(['message' => 'Users API', 'status' => 'Connected']);;
+      return response()->json(['message' => 'API de Usuarios', 'status' => 'Conectado']);
   });
 
+  // Endpoints de Usuarios
+  Route::get('users/search', 'UsersController@search');
   Route::resource('users', 'UsersController');
 });

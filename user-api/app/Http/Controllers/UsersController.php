@@ -6,6 +6,9 @@ use App\User;
 use Illuminate\Http\Request;
 use Validator;
 use Cache;
+use App\Repositories\UsersRepository;
+use App\Repositories\EloquentUsersRepository;
+use App\Repositories\ElasticsearchUsersRepository;
 
 class UsersController extends Controller
 {
@@ -16,6 +19,7 @@ class UsersController extends Controller
 
     public function index(Request $request)
     {
+
         // Obtendo os parametros da URL
         $orderByField = $request->get('order_by_field','id');
         $orderByOrder = $request->get('order_by_order','ASC');
@@ -51,6 +55,13 @@ class UsersController extends Controller
         });
 
         return response()->json($replay);
+    }
+
+    public function search(UsersRepository $repository, Request $request)
+    {
+        $users = $repository->search($request->get('q', ''));
+
+        return response()->json($users);
     }
 
     public function store(Request $request)

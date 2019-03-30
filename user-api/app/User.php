@@ -2,11 +2,14 @@
 
 namespace App;
 
+use App\Observers\Searchable;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Model
 {
+    use Searchable;
     use SoftDeletes; // <-- Use This Instead Of SoftDeletingTrait
     protected $table = 'users';
 
