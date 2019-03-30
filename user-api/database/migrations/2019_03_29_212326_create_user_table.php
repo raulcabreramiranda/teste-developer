@@ -18,7 +18,7 @@ class CreateUserTable extends Migration
             $table->string('name', 100);
             $table->string('cpf',14);
             $table->string('email', 60)->unique();
-            $table->string('phone_number',15);
+            $table->string('phone_number',15)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

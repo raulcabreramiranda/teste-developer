@@ -3,9 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Model
 {
+    use SoftDeletes; // <-- Use This Instead Of SoftDeletingTrait
+    protected $table = 'users';
+
     /**
      * Os atributos que são atribuíveis em massa.
      *
