@@ -11,11 +11,11 @@ class UserTest extends TestCase
 
     public function setUp(): void{
         parent::setUp();
-  
+
         $this->artisan('migrate');
         $this->artisan('db:seed');
     }
- 
+
     public function tearDown(): void
     {
         $this->artisan('migrate:reset');
@@ -23,7 +23,7 @@ class UserTest extends TestCase
     }
 
     /**
-     * Chamada a factory para gerar um usuario 
+     * Chamada a factory para gerar um usuario
      *
      * @return class
      */
@@ -40,9 +40,14 @@ class UserTest extends TestCase
     public function testIndex()
     {
         $response = $this->json('GET', "/api/users");
-        $response
-            ->assertStatus(200)
-            ;
+        $response->assertStatus(200);
+
+
+        $response = $this->json('GET', "/api/users?page=1&limit=10");
+        $response->assertStatus(200)->assertJsonFragment([
+            "page"=>'1',
+            "limit"=>'10',
+        ]);
     }
 
     /**
@@ -58,8 +63,7 @@ class UserTest extends TestCase
         $response = $this->json('GET', "api/users/{$activity->id}");
         // Delete the test shop
         $activity->delete();
-        $response
-            ->assertStatus(200);
+        $response->assertStatus(200);
     }
 
     /**
@@ -77,12 +81,12 @@ class UserTest extends TestCase
         ];
 
         $response = $this->json('POST', "api/users/", $activity);
-     
+
         $response
             ->assertStatus(201)
             ->assertJsonFragment($activity);
 
-        $response = $this->json('POST', "api/users/", $activity);           
+        $response = $this->json('POST', "api/users/", $activity);
         $response
             ->assertStatus(422)
             ->assertJsonFragment([
@@ -90,14 +94,14 @@ class UserTest extends TestCase
             ]);
 
         unset($activity['name']);
-        $response = $this->json('POST', "api/users/", $activity);           
+        $response = $this->json('POST', "api/users/", $activity);
         $response
             ->assertStatus(422)
             ->assertJsonFragment([
                 "message" => "Falha na validação","errors"=>array("The name field is required.","The email has already been taken.")
             ]);
     }
-    
+
     /**
      * DELETE /users/<id>
      * Teste do método destroy() que exclui um usuario
@@ -112,4 +116,3 @@ class UserTest extends TestCase
             ->assertStatus(204);
     }
 }
-    

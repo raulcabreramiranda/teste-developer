@@ -13,17 +13,46 @@ class UsersController extends Controller
 
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
-        return response()->json($users);
+        // Obtendo os parametros da URL
+        $orderByField = $request->get('order_by_field','id');
+        $orderByOrder = $request->get('order_by_order','ASC');
+        $page = $request->get('page', 1);
+        $limit = $request->get('limit', 10);
+        $filterName = $request->get('name', '');
+        $filterCpf = $request->get('cpf', '');
+        $filterEmail = $request->get('email', '');
+        $filterPhoneNumber = $request->get('phone_number', '');
+
+        // Creando a consulta com a ordem, os filtros e a paginação
+        $usersQuery = User::orderBy($orderByField, $orderByOrder);
+
+        if($filterName !== '') $usersQuery->where('name', 'like', "%{$filterName}%");
+        if($filterCpf !== '') $usersQuery->where('cpf', 'like', "%{$filterCpf}%");
+        if($filterEmail !== '') $usersQuery->where('email', 'like', "%{$filterEmail}%");
+        if($filterPhoneNumber !== '') $usersQuery->where('phone_number', 'like', "%{$filterPhoneNumber}%");
+
+        $usersQuery->skip(($page-1)*$limit);
+        $usersQuery->take($limit);
+
+        $rowCount = $usersQuery->count();
+        $users = $usersQuery->get();
+        $replay = array(
+            'itens' => $users,
+            'page' => $page,
+            'limit' => $limit,
+            'count' => $rowCount
+        );
+
+        return response()->json($replay);
     }
 
     public function store(Request $request)
     {
         // Obtendo os dados do usuario
         $data = json_decode($request->getContent(), true);
-        
+
         // Validando os dados do usuario antes de criar
         $validator = Validator::make($data, [
             'name' => 'required|max:100',
@@ -38,7 +67,7 @@ class UsersController extends Controller
         }
 
 
-        // Criando o usuario 
+        // Criando o usuario
         $user = new User();
         $user->fill($data);
         $user->save();
@@ -94,7 +123,7 @@ class UsersController extends Controller
             ], 422);
         }
 
-        // Salvando dados do usuario 
+        // Salvando dados do usuario
         $user->fill($data);
         $user->save();
 
