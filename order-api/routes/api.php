@@ -13,6 +13,16 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::group(array('prefix' => '/'), function()
+{
+
+  Route::get('/', function () {
+      return response()->json(['message' => 'API de Pedidos', 'status' => 'Conectado']);
+  });
+
+  // Endpoints de Pedidos
+  Route::get('orders/search', 'OrdersController@search');
+  Route::resource('orders', 'OrdersController');
 });
+
