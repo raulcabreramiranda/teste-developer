@@ -64,6 +64,17 @@ class UsersController extends Controller
         return response()->json($users);
     }
 
+    public function searchIds(UsersRepository $repository, Request $request)
+    {
+        $users = $repository->searchIds($request->get('q', ''));
+        $userIds = array();
+        foreach($users as $user){
+            $userIds[] = $user->id;
+        }
+
+        return response()->json($userIds);
+    }
+
     public function store(Request $request)
     {
         // Obtendo os dados do usuario
@@ -84,7 +95,7 @@ class UsersController extends Controller
 
 
         // Criando o usuario
-        $user = new User();
+        $user = new User(); 
         $user->fill($data);
         Cache::flush();
         $user->save();

@@ -21,7 +21,14 @@ class ElasticsearchUsersRepository implements UsersRepository
         return $this->buildCollection($items);
     }
 
-    private function searchOnElasticsearch(string $query): array
+    public function searchIds(string $query = ""): Collection
+    {
+        $items = $this->searchOnElasticsearch($query, array("id"));
+
+        return $this->buildCollection($items);
+    }
+
+    private function searchOnElasticsearch(string $query, array $sourceFields = array())
     {
         $instance = new User;
 
@@ -29,6 +36,7 @@ class ElasticsearchUsersRepository implements UsersRepository
             'index' => $instance->getSearchIndex(),
             'type' => $instance->getSearchType(),
             'body' => [
+                "_source" => $sourceFields,
                 'query' => [
                     'multi_match' => [
                         'fields' => ['cpf', 'email', 'name'],

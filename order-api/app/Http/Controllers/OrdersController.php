@@ -66,11 +66,47 @@ class OrdersController extends Controller
         return response()->json($orders);
     }
 
+    public function searchByUser(OrdersRepository $repository, Request $request)
+    {
+
+        $userName = $request->get('q', '');
+        $client = new Client(['http_errors' => false]);
+        // Obtendo os dados do usuario
+        $resUser = $client->request('GET', config('services.user_api.path').'/search_ids?q='.$userName);
+
+        if($resUser->getStatusCode() !== 200) {
+            return response()->json([
+                'message'   => 'Falha na validação',
+                'errors'    => 'Usuario não encontrado'
+            ], 422);
+        }
+
+        $userIds = json_decode($resUser->getBody());
+
+        $orders = $repository->searchByUserId($userIds);
+
+        return response()->json($orders);
+    }
+
     public function store(Request $request)
     {
         // Obtendo os dados do usuario
         $data = json_decode($request->getContent(), true);
 
+        // Validando os dados do usuario antes de criar
+        $validator = Validator::make($data, [
+            'user_id' => 'required|max:100',
+            'item_description' => 'required',
+            'item_quantity' => 'required',
+            'item_price' => 'required',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'message'   => 'Falha na validação',
+                'errors'    => $validator->errors()->all()
+            ], 422);
+        }
 
         $client = new Client(['http_errors' => false]);
         // Obtendo os dados do usuario
@@ -82,19 +118,7 @@ class OrdersController extends Controller
             ], 422);
         }
 
-        // Validando os dados do usuario antes de criar
-        $validator = Validator::make($data, [
-            'user_id' => 'required|max:100',
-            'item_description' => 'required',
-            'item_quantity' => 'required',
-            'item_price' => 'required',
-        ]);
-        if($validator->fails()) {
-            return response()->json([
-                'message'   => 'Falha na validação',
-                'errors'    => $validator->errors()->all()
-            ], 422);
-        }
+
 
         // Criando o usuario
         $order = new Order();

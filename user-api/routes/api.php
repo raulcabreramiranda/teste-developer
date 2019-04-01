@@ -22,5 +22,6 @@ Route::group(array('prefix' => '/'), function()
 
   // Endpoints de Usuarios
   Route::get('users/search', 'UsersController@search');
+  Route::get('users/search_ids', 'UsersController@searchIds');
   Route::resource('users', 'UsersController');
 });

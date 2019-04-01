@@ -22,6 +22,7 @@ Route::group(array('prefix' => '/'), function()
   });
 
   // Endpoints de Pedidos
+  Route::get('orders/search/user', 'OrdersController@searchByUser');
   Route::get('orders/search', 'OrdersController@search');
   Route::resource('orders', 'OrdersController');
 });

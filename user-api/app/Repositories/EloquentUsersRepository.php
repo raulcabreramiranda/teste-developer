@@ -14,4 +14,11 @@ class EloquentUsersRepository implements UsersRepository
         ->orWhere('cpf', 'like', "%{$query}%")
             ->get();
     }
+    public function searchId(string $query = ""): Collection
+    {
+        return User::select('id')->where('name', 'like', "%{$query}%")
+        ->orWhere('email', 'like', "%{$query}%")
+        ->orWhere('cpf', 'like', "%{$query}%")
+            ->get();
+    }
 }

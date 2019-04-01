@@ -21,6 +21,14 @@ class ElasticsearchOrdersRepository implements OrdersRepository
         return $this->buildCollection($items);
     }
 
+
+    public function searchByUserId(array $ids = array()): Collection
+    {
+        $items = $this->searchTermsOnElasticsearch("user_id", $ids);
+
+        return $this->buildCollection($items);
+    }
+
     private function searchOnElasticsearch(string $query): array
     {
         $instance = new Order;
@@ -31,13 +39,34 @@ class ElasticsearchOrdersRepository implements OrdersRepository
             'body' => [
                 'query' => [
                     'multi_match' => [
-                        'fields' => ['user_id', 'item_description', 'item_quantity', 'item_price'],
+                        'fields' => ['item_description'],
                         'query' => $query,
                     ],
                 ],
             ],
         ]);
+        return $items;
+    }
 
+    private function searchTermsOnElasticsearch(string $field, array $terms): array
+    {
+        $instance = new Order;
+
+        $items = $this->search->search([
+            'index' => $instance->getSearchIndex(),
+            'type' => $instance->getSearchType(),
+            'body' => [
+                'query' => [
+                    'constant_score' => [
+                        'filter' => [
+                            'terms' => [
+                                $field => $terms,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
         return $items;
     }
 
