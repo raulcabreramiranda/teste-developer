@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Collection;
 
-interface UsersRepository
+interface OrdersRepository
 {
     public function search(string $query = ""): Collection;
 }
