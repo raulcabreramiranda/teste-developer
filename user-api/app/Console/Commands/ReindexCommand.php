@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class ReindexCommand extends Command
 {
     protected $name = "search:reindex";
-    protected $description = "Indexes all articles to elasticsearch";
+    protected $description = "Indexar todos os usuários para elasticsearch";
     private $search;
 
     public function __construct(Client $search)
