@@ -1,6 +1,55 @@
 version: '2'
 services:
-    redis_order:
-        image: sickp/alpine-redis:3.2.2
-        ports:
-            - "6380:6379"
+  web:
+    build: .
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=${LOCAL_HOST}
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5434
+      - DB_DATABASE=serasa_orders
+      - DB_DATABASE_TESTE=serasa_orders_teste
+      - SEARCH_HOSTS=${LOCAL_HOST}:9201
+      - REDIS_HOST=${LOCAL_HOST}
+      - REDIS_PASSWORD=null
+      - REDIS_PORT=6382
+      - APP_DEBUG=true
+    ports:
+      - "8181:8181"
+    links:
+        - postgres
+        - redis
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+  redis:
+    image: "redis:4.0.11"
+    ports:
+      - 6382:6379
+
+  postgres:
+      image: postgres:9.5-alpine
+      container_name: serasa-postgres
+      volumes:
+         - "./sourcefiles/postgres:/var/lib/postgresql/data"
+      ports:
+         - 5434:5432
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=serasa_orders
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9201:9200
+
