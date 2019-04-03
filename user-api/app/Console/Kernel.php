@@ -2,7 +2,7 @@
 
 namespace App\Console;
 
-use App\Console\Commands\ReindexCommand;
+use App\Console\Commands\ReindexElasticsearchCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        ReindexCommand::class,
+        ReindexElasticsearchCommand::class,
+        KongRegisterCommand::class,
+        KongUnregisterCommand::class,
     ];
 
     /**

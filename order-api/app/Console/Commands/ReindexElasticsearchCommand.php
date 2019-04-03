@@ -6,7 +6,7 @@ use App\Order;
 use Elasticsearch\Client;
 use Illuminate\Console\Command;
 
-class ReindexCommand extends Command
+class ReindexElasticsearchCommand extends Command
 {
     protected $name = "search:reindex";
     protected $description = "Indexa todos os pedidos para elasticsearch";
