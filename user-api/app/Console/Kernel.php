@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\KongUnregisterCommand;
+use App\Console\Commands\KongRegisterCommand;
 use App\Console\Commands\ReindexElasticsearchCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;

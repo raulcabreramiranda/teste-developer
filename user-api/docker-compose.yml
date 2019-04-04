@@ -1,46 +1,69 @@
 version: '2'
 services:
   web:
+    container_name: serasa-user_api-web
+    networks:
+      - user-api-network
     build: .
     environment:
       - DB_CONNECTION=pgsql
-      - DB_HOST=${LOCAL_HOST}
+      - DB_HOST=postgres_bd
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
-      - DB_PORT=5435
-      - DB_DATABASE=serasa_orders
-      - DB_DATABASE_TESTE=serasa_orders_teste
-      - SEARCH_HOSTS=${LOCAL_HOST}:9202
-      - REDIS_HOST=${LOCAL_HOST}
+      - DB_PORT=5432
+      - DB_DATABASE=serasa_users
+      - DB_HOST_TESTE=postgres_teste_bd
+      - DB_DATABASE_TESTE=serasa_users_teste
+      - SEARCH_HOSTS=elasticsearch:9200
+      - REDIS_HOST=redis
       - REDIS_PASSWORD=null
-      - REDIS_PORT=6383
+      - REDIS_PORT=6379
       - APP_DEBUG=true
+      - KONG_PATH=${KONG_PATH}
     ports:
       - "8182:8182"
-    links:
-        - postgres
-        - redis
     depends_on:
-      - postgres
+      - postgres_bd
+      - postgres_teste_bd
       - redis
       - elasticsearch
-  redis:
-    image: "redis:4.0.11"
-    ports:
-      - 6383:6379
 
-  postgres:
-      image: postgres:9.5-alpine
-      volumes:
-         - "./sourcefiles/postgres:/var/lib/postgresql/data"
-      ports:
-         - 5435:5432
-      environment:
+  redis:
+    container_name: serasa-user_api-redis
+    networks:
+      - user-api-network
+    image: "redis:4.0.11"
+
+  postgres_bd:
+    container_name: serasa-user_api-postgres
+    networks:
+      - user-api-network
+    volumes:
+      - "./sourcefiles/postgres:/var/lib/postgresql/datauser"
+    image: postgres:9.5-alpine
+    environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=serasa_orders
+        - POSTGRES_DB=serasa_users
+
+  postgres_teste_bd:
+    container_name: serasa-user_api-postgres_teste
+    networks:
+      - user-api-network
+    image: postgres:9.5-alpine
+    volumes:
+      - "./sourcefiles/postgres:/var/lib/postgresql/datausertest"
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=serasa_users_teste
 
   elasticsearch:
+    container_name: serasa-user_api-elasticsearch
+    networks:
+      - user-api-network
+    volumes:
+          - "es_data:/usr/share/elasticsearch/datauser"
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
     environment:
       - discovery.type=single-node
@@ -48,6 +71,10 @@ services:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - 9202:9200
 
+volumes:
+  es_data:
+
+networks:
+  user-api-network:
+    driver: bridge

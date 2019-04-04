@@ -45,8 +45,8 @@ class UserTest extends TestCase
 
         $response = $this->json('GET', "/api/users?page=1&limit=10");
         $response->assertStatus(200)->assertJsonFragment([
-            "page"=>'1',
-            "limit"=>'10',
+            "page"=>1,
+            "limit"=>10,
         ]);
     }
 

@@ -81,10 +81,11 @@ class OrderTest extends TestCase
         ];
 
         $response = $this->json('POST', "api/orders/", $activity);
-
+        dump($response->getContent());
         $response
             ->assertStatus(201)
             ->assertJsonFragment($activity);
+
 
         unset($activity['user_id']);
         $response = $this->json('POST', "api/orders/", $activity);

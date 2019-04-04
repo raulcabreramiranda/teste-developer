@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class KongUnregisterCommand extends Command
 {
-    protected $signature = 'kong:unregister';
+    protected $signature = 'kong:unregister {urlKong : The URL Kong}';
 
     protected $description = "Indexa todos os pedidos para elasticsearch";
 
@@ -20,7 +20,8 @@ class KongUnregisterCommand extends Command
 
     public function handle()
     {
-        $kongPath = env('KONG_PATH');
+        $arguments = $this->arguments();
+        $kongPath = $arguments['urlKong'];
 
         $client = new Client(['http_errors' => false]);
 
@@ -28,6 +29,8 @@ class KongUnregisterCommand extends Command
         $resKong = $client->request('GET', $kongPath . "/services");
         if ($resKong->getStatusCode() === 200) {
             $services = json_decode($resKong->getBody(), true);
+            $resKong = $client->request('DELETE', $kongPath . "/consumers/ConsumerOrderAPI");
+
             foreach ($services['data'] as $service) {
                 print_r($service['name'] . " - " . $service['id'] . "\n");
                 if ($service['name'] == "OrderAPI") {
@@ -42,6 +45,9 @@ class KongUnregisterCommand extends Command
                 }
             }
 
+        }else {
+            $service = json_decode($resKong->getBody(), true);
+            dd($service);
         }
 
         $this->info("\n\nFeito !!!!!!!! - " . $kongPath);

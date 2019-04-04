@@ -72,7 +72,7 @@ class OrdersController extends Controller
         $userName = $request->get('q', '');
         $client = new Client(['http_errors' => false]);
         // Obtendo os dados do usuario
-        $resUser = $client->request('GET', config('services.user_api.path').'/search_ids?q='.$userName);
+        $resUser = $client->request('GET', config('services.user_api.path').'/search_ids?apikey=secret_consumer_auth_api&q='.$userName);
 
         if($resUser->getStatusCode() !== 200) {
             return response()->json([
@@ -110,7 +110,7 @@ class OrdersController extends Controller
 
         $client = new Client(['http_errors' => false]);
         // Obtendo os dados do usuario
-        $resUser = $client->request('GET', config('services.user_api.path').'/'.$data['user_id']);
+        $resUser = $client->request('GET', config('services.user_api.path').'/'.$data['user_id']."?apikey=secret_consumer_auth_api");
         if($resUser->getStatusCode() !== 200) {
             return response()->json([
                 'message'   => 'Falha na validação',

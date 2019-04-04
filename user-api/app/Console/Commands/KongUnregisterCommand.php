@@ -8,9 +8,9 @@ use Illuminate\Console\Command;
 
 class KongUnregisterCommand extends Command
 {
-    protected $signature = 'kong:unregister';
+    protected $signature = 'kong:unregister {urlKong : The URL Kong}';
 
-    protected $description = "Indexa todos os pedidos para elasticsearch";
+    protected $description = "Registrando serviço de Usuarios em Kong";
 
 
     public function __construct()
@@ -20,7 +20,8 @@ class KongUnregisterCommand extends Command
 
     public function handle()
     {
-        $kongPath = env('KONG_PATH');
+        $arguments = $this->arguments();
+        $kongPath = $arguments['urlKong'];
 
         $client = new Client(['http_errors' => false]);
 
@@ -29,9 +30,11 @@ class KongUnregisterCommand extends Command
         if ($resKong->getStatusCode() === 200) {
             $services = json_decode($resKong->getBody(), true);
 
+            $resKong = $client->request('DELETE', $kongPath . "/consumers/ConsumerUserAPI");
+
             foreach ($services['data'] as $service) {
-                print_r("Unregister - " . $service['name'] . " - " . $service['id'] . "\n");
                 if ($service['name'] == "UserAPI") {
+                    print_r("Unregister - " . $service['name'] . " - " . $service['id'] . "\n");
                     $resKongRoutes = $client->request('GET', $kongPath . "/services/" . $service['id'] . "/routes");
                     $routes = json_decode($resKongRoutes->getBody(), true);
 
@@ -42,6 +45,9 @@ class KongUnregisterCommand extends Command
                     $resKongRoutes = $client->request('DELETE', $kongPath . "/services/" . $service['id']);
                 }
             }
+        }else {
+            $service = json_decode($resKong->getBody(), true);
+            dd($service);
         }
 
         $this->info("\n\nFeito !!!!!!!! - " . $kongPath);
