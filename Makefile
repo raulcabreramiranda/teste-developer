@@ -22,45 +22,45 @@ start:
 
 .PHONY: register
 register:
-	@docker exec serasa-user_api-web php artisan kong:un   ${KONG_PATH}
-	@docker exec serasa-order_api-web php artisan kong:un  ${KONG_PATH}
-	@docker exec serasa-user_api-web php artisan kong:re   ${KONG_PATH} ${API_USERS_PATH}
-	@docker exec serasa-order_api-web php artisan kong:re  ${KONG_PATH} ${API_ORDERS_PATH}
+	@docker exec teste-user_api-web php artisan kong:un   ${KONG_PATH}
+	@docker exec teste-order_api-web php artisan kong:un  ${KONG_PATH}
+	@docker exec teste-user_api-web php artisan kong:re   ${KONG_PATH} ${API_USERS_PATH}
+	@docker exec teste-order_api-web php artisan kong:re  ${KONG_PATH} ${API_ORDERS_PATH}
 
 
 .PHONY: config
 config:
-	@docker exec serasa-user_api-web php artisan migrate
-	@docker exec serasa-order_api-web php artisan migrate
-	@docker exec serasa-user_api-web composer test
-	@docker exec serasa-order_api-web composer test
+	@docker exec teste-user_api-web php artisan migrate
+	@docker exec teste-order_api-web php artisan migrate
+	@docker exec teste-user_api-web composer test
+	@docker exec teste-order_api-web composer test
 
 
 .PHONY: stop
 stop:
-	@docker stop serasa-kong-kong
-	@docker stop serasa-kong-migrations
-	@docker stop serasa-kong-db
-	@docker stop serasa-user_api-web
-	@docker stop serasa-user_api-redis
-	@docker stop serasa-user_api-postgres
-	@docker stop serasa-user_api-postgres_teste
-	@docker stop serasa-user_api-elasticsearch
-	@docker stop serasa-order_api-web
-	@docker stop serasa-order_api-redis
-	@docker stop serasa-order_api-postgres
-	@docker stop serasa-order_api-postgres_teste
-	@docker stop serasa-order_api-elasticsearch
-	@docker rm serasa-kong-kong
-	@docker rm serasa-kong-migrations
-	@docker rm serasa-kong-db
-	@docker rm serasa-user_api-web
-	@docker rm serasa-user_api-redis
-	@docker rm serasa-user_api-postgres
-	@docker rm serasa-user_api-postgres_teste
-	@docker rm serasa-user_api-elasticsearch
-	@docker rm serasa-order_api-web
-	@docker rm serasa-order_api-redis
-	@docker rm serasa-order_api-postgres
-	@docker rm serasa-order_api-postgres_teste
-	@docker rm serasa-order_api-elasticsearch
+	@docker stop teste-kong-kong
+	@docker stop teste-kong-migrations
+	@docker stop teste-kong-db
+	@docker stop teste-user_api-web
+	@docker stop teste-user_api-redis
+	@docker stop teste-user_api-postgres
+	@docker stop teste-user_api-postgres_teste
+	@docker stop teste-user_api-elasticsearch
+	@docker stop teste-order_api-web
+	@docker stop teste-order_api-redis
+	@docker stop teste-order_api-postgres
+	@docker stop teste-order_api-postgres_teste
+	@docker stop teste-order_api-elasticsearch
+	@docker rm teste-kong-kong
+	@docker rm teste-kong-migrations
+	@docker rm teste-kong-db
+	@docker rm teste-user_api-web
+	@docker rm teste-user_api-redis
+	@docker rm teste-user_api-postgres
+	@docker rm teste-user_api-postgres_teste
+	@docker rm teste-user_api-elasticsearch
+	@docker rm teste-order_api-web
+	@docker rm teste-order_api-redis
+	@docker rm teste-order_api-postgres
+	@docker rm teste-order_api-postgres_teste
+	@docker rm teste-order_api-elasticsearch

@@ -7,7 +7,7 @@ networks:
   kong-net:
 services:
   kong-migrations:
-    container_name: serasa-kong-migrations
+    container_name: teste-kong-migrations
     image: "${KONG_DOCKER_TAG:-kong:latest}"
     command: kong migrations bootstrap
     depends_on:
@@ -25,7 +25,7 @@ services:
       - kong-net
     restart: on-failure
   kong:
-    container_name: serasa-kong-kong
+    container_name: teste-kong-kong
     image: "${KONG_DOCKER_TAG:-kong:latest}"
     depends_on:
       db:
@@ -51,7 +51,7 @@ services:
       - "8444:8444/tcp"
     restart: on-failure
   db:
-    container_name: serasa-kong-db
+    container_name: teste-kong-db
     image: postgres:9.5
     environment:
       POSTGRES_DB: ${KONG_PG_DATABASE:-kong}

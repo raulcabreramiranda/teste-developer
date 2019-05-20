@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    container_name: serasa-order_api-web
+    container_name: teste-order_api-web
     networks:
       - order-api-network
     build: .
@@ -11,9 +11,9 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - DB_PORT=5432
-      - DB_DATABASE=serasa_orders
+      - DB_DATABASE=teste_orders
       - DB_HOST_TESTE=postgres_teste_bd
-      - DB_DATABASE_TESTE=serasa_orders_teste
+      - DB_DATABASE_TESTE=teste_orders_teste
       - SEARCH_HOSTS=elasticsearch:9200
       - REDIS_HOST=redis
       - REDIS_PASSWORD=null
@@ -30,13 +30,13 @@ services:
       - elasticsearch
 
   redis:
-    container_name: serasa-order_api-redis
+    container_name: teste-order_api-redis
     image: "redis:4.0.11"
     networks:
       - order-api-network
 
   postgres_bd:
-    container_name: serasa-order_api-postgres
+    container_name: teste-order_api-postgres
     networks:
       - order-api-network
     image: postgres:9.5-alpine
@@ -45,10 +45,10 @@ services:
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=serasa_orders
+        - POSTGRES_DB=teste_orders
 
   postgres_teste_bd:
-    container_name: serasa-order_api-postgres_teste
+    container_name: teste-order_api-postgres_teste
     networks:
       - order-api-network
     image: postgres:9.5-alpine
@@ -57,10 +57,10 @@ services:
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=serasa_orders_teste
+        - POSTGRES_DB=teste_orders_teste
 
   elasticsearch:
-    container_name: serasa-order_api-elasticsearch
+    container_name: teste-order_api-elasticsearch
     networks:
       - order-api-network
     volumes:

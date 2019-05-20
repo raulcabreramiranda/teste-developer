@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    container_name: serasa-user_api-web
+    container_name: teste-user_api-web
     networks:
       - user-api-network
     build: .
@@ -11,9 +11,9 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - DB_PORT=5432
-      - DB_DATABASE=serasa_users
+      - DB_DATABASE=teste_users
       - DB_HOST_TESTE=postgres_teste_bd
-      - DB_DATABASE_TESTE=serasa_users_teste
+      - DB_DATABASE_TESTE=teste_users_teste
       - SEARCH_HOSTS=elasticsearch:9200
       - REDIS_HOST=redis
       - REDIS_PASSWORD=null
@@ -29,13 +29,13 @@ services:
       - elasticsearch
 
   redis:
-    container_name: serasa-user_api-redis
+    container_name: teste-user_api-redis
     networks:
       - user-api-network
     image: "redis:4.0.11"
 
   postgres_bd:
-    container_name: serasa-user_api-postgres
+    container_name: teste-user_api-postgres
     networks:
       - user-api-network
     volumes:
@@ -44,10 +44,10 @@ services:
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=serasa_users
+        - POSTGRES_DB=teste_users
 
   postgres_teste_bd:
-    container_name: serasa-user_api-postgres_teste
+    container_name: teste-user_api-postgres_teste
     networks:
       - user-api-network
     image: postgres:9.5-alpine
@@ -56,10 +56,10 @@ services:
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=serasa_users_teste
+        - POSTGRES_DB=teste_users_teste
 
   elasticsearch:
-    container_name: serasa-user_api-elasticsearch
+    container_name: teste-user_api-elasticsearch
     networks:
       - user-api-network
     volumes:
